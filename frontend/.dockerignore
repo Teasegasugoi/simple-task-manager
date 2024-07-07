@@ -1,0 +1,16 @@
+# ignore git files
+.git/
+.gitignore
+
+# ignore Dockerfile
+Dockerfile
+
+# ignore node_modules and build files
+*/node_modules/
+*/build/
+
+# ignore editorconfig
+.editorconfig
+
+# ignore README
+README.md

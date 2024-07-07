@@ -1,0 +1,9 @@
+# ignore git files
+.git/
+.gitignore
+
+# ignore db files
+*.db
+
+# ignore Dockerfile
+Dockerfile
