@@ -7,8 +7,12 @@ import DeleteTaskModal from './components/DeleteTaskModal';
 import TaskDetailModal from './components/TaskDetailModal';
 import { fetchTasks, addTask, editTask, deleteTask } from './api/tasks';
 import useModal from './hooks/useModal';
+import { getUserId } from './utils/utils';
 
 function App() {
+
+    // ユーザーID
+    const [userId, setUserId] = useState('');
 
     // Tasks
     const [tasks, setTasks] = useState([]);
@@ -31,6 +35,7 @@ function App() {
 
     useEffect(() => {
         loadTasks();
+        setUserId(getUserId);
     }, [loadTasks]);
 
     // タスク追加
@@ -73,7 +78,7 @@ function App() {
             <Box sx={{ mt: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 2 }}>
                     <Typography variant="h4" gutterBottom>
-                        マイタスク
+                    {userId} さんのマイタスク
                     </Typography>
                     <Button variant="contained" color="primary" startIcon={<AddIcon />} sx={{ ml: 2 }} onClick={openAddModal}>
                         Add Task
