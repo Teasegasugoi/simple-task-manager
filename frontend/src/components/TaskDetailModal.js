@@ -1,71 +1,90 @@
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Grid, Typography, Checkbox, FormControlLabel } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Grid, Checkbox, FormControlLabel, Typography, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
 
-const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task, onToggleComplete }) => {
-    if (!task) return null;
+const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) => {
+    const [editedTask, setEditedTask] = useState(task || {});
+
+    useEffect(() => {
+        if (task) {
+            setEditedTask(task);
+        }
+    }, [task]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setEditedTask({ ...editedTask, [name]: value });
+    };
+
+    const handleCheckboxChange = (e) => {
+        setEditedTask({ ...editedTask, completed: e.target.checked });
+    };
+
+    const handleSaveChanges = () => {
+        handleEdit(editedTask);
+    };
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                Design task detail
+                タスク詳細
                 <Button
                     edge="end"
                     color="inherit"
-                    onClick={handleEdit}
-                    aria-label="edit"
+                    onClick={handleDelete}
+                    aria-label="delete"
                     sx={{ position: 'absolute', right: 16, top: 16 }}
                 >
-                    <EditIcon />
+                    <DeleteIcon />
                 </Button>
             </DialogTitle>
+            <Box />
             <DialogContent>
-                <Typography variant="h6" gutterBottom>Details</Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Title"
-                            variant="outlined"
-                            fullWidth
-                            value={task.title}
-                            InputProps={{
-                                readOnly: true,
-                                style: { backgroundColor: '#f5f5f5' },
-                            }}
-                        />
+                {task ? (
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Task Name"
+                                variant="outlined"
+                                fullWidth
+                                name="title"
+                                value={editedTask.title || ""}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Description"
+                                variant="outlined"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                name="description"
+                                value={editedTask.description || ""}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={!!editedTask.completed}
+                                        onChange={handleCheckboxChange}
+                                        color="primary"
+                                    />
+                                }
+                                label="Completion status"
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Description"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={task.description}
-                            InputProps={{
-                                readOnly: true,
-                                style: { backgroundColor: '#f5f5f5' },
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={task.completed}
-                                    onChange={(e) => onToggleComplete(task.id, e.target.checked)}
-                                    color="primary"
-                                />
-                            }
-                            label="Completion status"
-                        />
-                    </Grid>
-                </Grid>
+                ) : (
+                    <Typography>Loading...</Typography>
+                )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="secondary">Cancel</Button>
-                <Button onClick={handleDelete} color="primary" startIcon={<DeleteIcon />}>Delete</Button>
+                <Button onClick={handleClose} color="secondary">閉じる</Button>
+                <Button onClick={handleSaveChanges} color="primary" startIcon={<SaveIcon />}>保存</Button>
             </DialogActions>
         </Dialog>
     );

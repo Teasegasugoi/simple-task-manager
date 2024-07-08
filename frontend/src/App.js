@@ -3,111 +3,70 @@ import { Container, Typography, Button, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import TaskList from './components/TaskList';
 import AddTaskModal from './components/AddTaskModal';
-import EditTaskModal from './components/EditTaskModal';
 import DeleteTaskModal from './components/DeleteTaskModal';
 import TaskDetailModal from './components/TaskDetailModal';
-import { getUserId } from './utils/utils';
-import axios from 'axios';
+import { fetchTasks, addTask, editTask, deleteTask } from './api/tasks';
+import useModal from './hooks/useModal';
 
 function App() {
-    const [openAdd, setOpenAdd] = useState(false);
-    const [openEdit, setOpenEdit] = useState(false);
-    const [openDelete, setOpenDelete] = useState(false);
-    const [openDetail, setOpenDetail] = useState(false);
+
+    // Tasks
     const [tasks, setTasks] = useState([]);
-    const [editingTask, setEditingTask] = useState(null);
-    const [deletingTask, setDeletingTask] = useState(null);
     const [detailTask, setDetailTask] = useState(null);
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+    // Modal
+    const [isAddOpen, openAddModal, closeAddModal] = useModal();
+    const [isDeleteOpen, openDeleteModal, closeDeleteModal] = useModal();
+    const [isDetailOpen, openDetailModal, closeDetailModal] = useModal();
 
-    const fetchTasks = useCallback(async () => {
-        const userId = getUserId();
+    // Load tasks
+    const loadTasks = useCallback(async () => {
         try {
-            const response = await axios.get(`${backendUrl}/api/tasks`, {
-                params: { user_id: userId },
-            });
-            setTasks(response.data.tasks);
+            const tasks = await fetchTasks();
+            setTasks(tasks);
         } catch (error) {
             console.error(error);
         }
-    }, [backendUrl]);
+    }, []);
 
     useEffect(() => {
-        fetchTasks();
-    }, [fetchTasks]);
+        loadTasks();
+    }, [loadTasks]);
 
-    const handleOpenAdd = () => setOpenAdd(true);
-    const handleCloseAdd = () => setOpenAdd(false);
-
-    const handleOpenEdit = (task) => {
-        setEditingTask(task);
-        setOpenEdit(true);
-    };
-    const handleCloseEdit = () => setOpenEdit(false);
-
-    const handleOpenDelete = (task) => {
-        setDeletingTask(task);
-        setOpenDelete(true);
-    };
-    const handleCloseDelete = () => {
-        setDeletingTask(null);
-        setOpenDelete(false);
-    };
-
-    const handleOpenDetail = (task) => {
-        setDetailTask(task);
-        setOpenDetail(true);
-    };
-    const handleCloseDetail = () => {
-        setDetailTask(null);
-        setOpenDetail(false);
-    };
-
+    // タスク追加
     const handleSaveAdd = async (newTask) => {
-        const userId = getUserId();
         try {
-            const response = await axios.post(`${backendUrl}/api/tasks`, { ...newTask, user_id: userId });
-            setTasks([...tasks, response.data.task]);
+            const addedTask = await addTask(newTask);
+            setTasks([...tasks, addedTask]);
         } catch (error) {
             console.error(error);
         }
-        handleCloseAdd();
+        closeAddModal();
     };
 
-    const handleSaveEdit = async (updatedTask) => {
-        const userId = getUserId();
+    // 詳細画面での編集
+    const handleSaveDetailEdit = async (updatedTask) => {
         try {
-            const response = await axios.put(`${backendUrl}/api/tasks/${updatedTask.id}`, { ...updatedTask, user_id: userId });
-            setTasks(tasks.map(task => task.id === updatedTask.id ? response.data.task : task));
+            const editedTask = await editTask(updatedTask);
+            setTasks(tasks.map(task => task.id === updatedTask.id ? editedTask : task));
+            setDetailTask(editedTask);
         } catch (error) {
             console.error(error);
         }
-        handleCloseEdit();
+        closeDetailModal();
     };
 
+    // 詳細画面でのタスク削除
     const handleConfirmDelete = async () => {
         try {
-            await axios.delete(`${backendUrl}/api/tasks/${deletingTask.id}`);
-            setTasks(tasks.filter(task => task.id !== deletingTask.id));
+            await deleteTask(detailTask.id);
+            setTasks(tasks.filter(task => task.id !== detailTask.id));
         } catch (error) {
             console.error(error);
         }
-        handleCloseDelete();
-        handleCloseDetail();
+        closeDeleteModal();
     };
 
-    const handleToggleComplete = (taskId, completed) => {
-        const updatedTask = tasks.find(task => task.id === taskId);
-        if (updatedTask) {
-            const updatedTasks = tasks.map(task =>
-                task.id === taskId ? { ...task, completed } : task
-            );
-            setTasks(updatedTasks);
-            updatedTask.completed = completed;
-            handleSaveEdit(updatedTask);
-        }
-    };
 
     return (
         <Container>
@@ -116,27 +75,27 @@ function App() {
                     <Typography variant="h4" gutterBottom>
                         マイタスク
                     </Typography>
-                    <Button variant="contained" color="primary" startIcon={<AddIcon />} sx={{ ml: 2 }} onClick={handleOpenAdd}>
+                    <Button variant="contained" color="primary" startIcon={<AddIcon />} sx={{ ml: 2 }} onClick={openAddModal}>
                         Add Task
                     </Button>
                 </Box>
-                <TaskList tasks={tasks} onEdit={handleOpenEdit} onDelete={handleOpenDelete} onDetail={handleOpenDetail} />
-                <AddTaskModal open={openAdd} handleClose={handleCloseAdd} handleSave={handleSaveAdd} />
-                <EditTaskModal open={openEdit} handleClose={handleCloseEdit} handleSave={handleSaveEdit} task={editingTask} />
-                <DeleteTaskModal open={openDelete} handleClose={handleCloseDelete} handleConfirm={handleConfirmDelete} task={deletingTask} />
+                <TaskList tasks={tasks} onDetail={(task) => { setDetailTask(task); openDetailModal(); }} />
+                <AddTaskModal open={isAddOpen} handleClose={closeAddModal} handleSave={handleSaveAdd} />
+                <DeleteTaskModal
+                    open={isDeleteOpen}
+                    handleClose={closeDeleteModal}
+                    handleConfirm={handleConfirmDelete}
+                    task={detailTask}
+                />
                 <TaskDetailModal
-                    open={openDetail}
-                    handleClose={handleCloseDetail}
-                    handleEdit={() => {
-                        handleOpenEdit(detailTask);
-                        handleCloseDetail();
-                    }}
+                    open={isDetailOpen}
+                    handleClose={closeDetailModal}
+                    handleEdit={handleSaveDetailEdit}
                     handleDelete={() => {
-                        handleOpenDelete(detailTask);
-                        handleCloseDetail();
+                        openDeleteModal();
+                        closeDetailModal();
                     }}
                     task={detailTask}
-                    onToggleComplete={handleToggleComplete}
                 />
             </Box>
         </Container>
