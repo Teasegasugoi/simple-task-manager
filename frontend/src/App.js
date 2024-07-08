@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Typography, Button, Box, Grid, Paper, List, ListItem, ListItemText, Avatar, Badge, IconButton, MenuItem, Menu } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Paper, List, ListItem, ListItemText, Avatar, Badge, MenuItem, Menu } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import TaskList from './components/TaskList';
@@ -55,6 +55,7 @@ function App() {
         } catch (error) {
             console.error(error);
         }
+    // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
@@ -128,11 +129,11 @@ function App() {
     const noDueDateTasksCount = filteredTasks.filter(task => task.due_date === "0001-01-01T00:00:00Z" && !task.completed).length;
     const completedTasksCount = filteredTasks.filter(task => task.completed).length;
     const expiredTasksCount = filteredTasks.filter(task => task.due_date < today && task.due_date !== "0001-01-01T00:00:00Z" && !task.completed).length;
-    const allTasksCount = filteredTasks.filter(task => !task.completed).length;
+    const allTasksCount = filteredTasks.length;
 
     const handleAddUserModalClose = () => {
         if (users.length === 0) {
-            return; // Prevent closing if no users
+            return;
         }
         closeAddUserModal();
     };

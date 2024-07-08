@@ -10,12 +10,6 @@ dayjs.extend(timezone);
 dayjs.locale('ja');
 
 const TaskList = ({ tasks, onDetail, currentView }) => {
-    const [showAll, setShowAll] = useState(true);
-    const [showToday, setShowToday] = useState(true);
-    const [showTomorrow, setShowTomorrow] = useState(true);
-    const [showNoDueDate, setShowNoDueDate] = useState(true);
-    const [showCompleted, setShowCompleted] = useState(true);
-    const [showExpired, setShowExpired] = useState(true);
 
     const today = dayjs().tz('Asia/Tokyo').startOf('day').format('YYYY-MM-DD');
     const tomorrow = dayjs().tz('Asia/Tokyo').add(1, 'day').startOf('day').format('YYYY-MM-DD');
@@ -31,7 +25,7 @@ const TaskList = ({ tasks, onDetail, currentView }) => {
         return dayjs(dateString).tz('Asia/Tokyo').format('M月D日');
     };
 
-    const renderTaskSection = (title, taskList, show, toggleShow) => (
+    const renderTaskSection = (taskList) => (
         <Box sx={{ mb: 4 }}>
             <Grid container spacing={2}>
                 {taskList.map(task => (
@@ -59,12 +53,12 @@ const TaskList = ({ tasks, onDetail, currentView }) => {
 
     return (
         <Box>
-            {currentView === '全て' && renderTaskSection("全て", allTasks, showAll, () => setShowAll(!showAll))}
-            {currentView === '期限なし' && renderTaskSection("期限なし", noDueDateTasks, showNoDueDate, () => setShowNoDueDate(!showNoDueDate))}
-            {currentView === '今日' && renderTaskSection("今日", todayTasks, showToday, () => setShowToday(!showToday))}
-            {currentView === '明日' && renderTaskSection("明日", tomorrowTasks, showTomorrow, () => setShowTomorrow(!showTomorrow))}
-            {currentView === '完了済み' && renderTaskSection("完了済み", completedTasks, showCompleted, () => setShowCompleted(!showCompleted))}
-            {currentView === '期限切れ' && renderTaskSection("期限切れ", expiredTasks, showExpired, () => setShowExpired(!showExpired))}
+            {currentView === '全て' && renderTaskSection(allTasks)}
+            {currentView === '期限なし' && renderTaskSection(noDueDateTasks)}
+            {currentView === '今日' && renderTaskSection(todayTasks)}
+            {currentView === '明日' && renderTaskSection(tomorrowTasks)}
+            {currentView === '完了済み' && renderTaskSection(completedTasks)}
+            {currentView === '期限切れ' && renderTaskSection(expiredTasks)}
         </Box>
     );
 };

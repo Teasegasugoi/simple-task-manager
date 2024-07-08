@@ -77,7 +77,7 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
                         <Grid item xs={12}>
                             <DatePickerComponent
                                 label="期日"
-                                value={editedTask.due_date && editedTask.due_date != "0001-01-01T00:00:00Z" ? dayjs(editedTask.due_date) : null}
+                                value={editedTask.due_date && editedTask.due_date !== "0001-01-01T00:00:00Z" ? dayjs(editedTask.due_date) : null}
                                 onChange={handleDateChange}
                             />
                         </Grid>
