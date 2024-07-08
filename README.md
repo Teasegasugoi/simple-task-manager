@@ -31,7 +31,7 @@ $ docker compose up --build
 ### バックエンド
 - Golang
 - Gin
-- gorm
+- GORM
 
 ### データベース
 - SQLite
