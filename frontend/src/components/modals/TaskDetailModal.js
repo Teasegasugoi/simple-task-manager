@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Grid, Checkbox, FormControlLabel, Typography, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
+import DatePickerComponent from '../DatePickerComponent';
+import dayjs from 'dayjs';
 
 const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) => {
     const [editedTask, setEditedTask] = useState(task || {});
@@ -21,6 +23,10 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
         setEditedTask({ ...editedTask, completed: e.target.checked });
     };
 
+    const handleDateChange = (newValue) => {
+        setEditedTask({ ...editedTask, due_date: newValue ? newValue.toISOString() : null });
+    };
+
     const handleSaveChanges = () => {
         handleEdit(editedTask);
     };
@@ -32,7 +38,7 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
                 <Button
                     edge="end"
                     color="inherit"
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(task)}
                     aria-label="delete"
                     sx={{ position: 'absolute', right: 16, top: 16 }}
                 >
@@ -45,7 +51,7 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
-                                label="Task Name"
+                                label="タスク名"
                                 variant="outlined"
                                 fullWidth
                                 name="title"
@@ -55,7 +61,7 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
-                                label="Description"
+                                label="説明"
                                 variant="outlined"
                                 fullWidth
                                 multiline
@@ -63,6 +69,13 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
                                 name="description"
                                 value={editedTask.description || ""}
                                 onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <DatePickerComponent
+                                label="期日"
+                                value={editedTask.due_date && editedTask.due_date != "0001-01-01T00:00:00Z" ? dayjs(editedTask.due_date) : null}
+                                onChange={handleDateChange}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -74,7 +87,7 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
                                         color="primary"
                                     />
                                 }
-                                label="Completion status"
+                                label="完了"
                             />
                         </Grid>
                     </Grid>

@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Grid } from '@mui/material';
+import DatePickerComponent from '../DatePickerComponent';
+import dayjs from 'dayjs';
 
 const AddTaskModal = ({ open, handleClose, handleSave }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [dueDate, setDueDate] = useState(null);
 
     const handleSubmit = () => {
         const newTask = {
             title,
             description,
+            due_date: dueDate ? dayjs(dueDate).toISOString() : null,
         };
         handleSave(newTask);
         handleClose();
@@ -16,12 +20,12 @@ const AddTaskModal = ({ open, handleClose, handleSave }) => {
 
     return (
         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Add new task</DialogTitle>
+            <DialogTitle>新しいタスクを追加</DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextField
-                            label="Title"
+                            label="タスク名"
                             variant="outlined"
                             fullWidth
                             value={title}
@@ -30,13 +34,20 @@ const AddTaskModal = ({ open, handleClose, handleSave }) => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="Description"
+                            label="説明"
                             variant="outlined"
                             fullWidth
                             multiline
                             rows={4}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <DatePickerComponent
+                            label="期日"
+                            value={dueDate ? dayjs(dueDate) : null}
+                            onChange={(newValue) => setDueDate(newValue ? dayjs(newValue).toISOString() : null)}
                         />
                     </Grid>
                 </Grid>
