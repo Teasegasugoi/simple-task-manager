@@ -16,6 +16,9 @@ const AddTaskModal = ({ open, handleClose, handleSave }) => {
         };
         handleSave(newTask);
         handleClose();
+        setTitle('');
+        setDescription('');
+        setDueDate(null);
     };
 
     return (
