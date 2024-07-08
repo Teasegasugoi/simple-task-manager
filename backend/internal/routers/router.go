@@ -33,6 +33,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			tasks.PUT("/:task_id", h.UpdateTaskHandler)
 			tasks.DELETE("/:task_id", h.DeleteTaskHandler)
 		}
+
+		users := root.Group("/users")
+		{
+			users.GET("", h.GetUsersHandler)
+			users.POST("", h.CreateUserHandler)
+		}
 	}
 
 	return r

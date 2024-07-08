@@ -12,4 +12,5 @@ type Task struct {
 	Priority    string    `json:"priority" gorm:"type:varchar(255);default:null"` // 優先度: future work
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	User        User `json:"user" gorm:"foreignKey:UserID;references:UserID"` // User
 }

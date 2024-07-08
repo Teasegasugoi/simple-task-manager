@@ -6,10 +6,10 @@ const DeleteTaskModal = ({ open, handleClose, handleConfirm, task }) => {
 
     return (
         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Delete Task</DialogTitle>
+            <DialogTitle>タスク削除</DialogTitle>
             <DialogContent>
                 <Typography>
-                    "{task.title}" を削除しますか？
+                    「{task.title}」 を削除しますか？
                 </Typography>
             </DialogContent>
             <DialogActions>

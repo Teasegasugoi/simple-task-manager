@@ -28,6 +28,9 @@ const TaskDetailModal = ({ open, handleClose, handleEdit, handleDelete, task }) 
     };
 
     const handleSaveChanges = () => {
+        if (editedTask.due_date === "0001-01-01T00:00:00Z") {
+            editedTask.due_date = null;
+        }
         handleEdit(editedTask);
     };
 

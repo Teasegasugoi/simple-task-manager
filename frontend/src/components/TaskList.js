@@ -22,7 +22,7 @@ const TaskList = ({ tasks, onDetail, currentView }) => {
 
     const todayTasks = tasks.filter(task => task.due_date.startsWith(today) && !task.completed);
     const tomorrowTasks = tasks.filter(task => task.due_date.startsWith(tomorrow) && !task.completed);
-    const noDueDateTasks = tasks.filter(task => task.due_date === "0001-01-01T00:00:00Z" && !task.completed);
+    const noDueDateTasks = tasks.filter(task => task.due_date === "0001-01-01T00:00:00Z"  && !task.completed);
     const completedTasks = tasks.filter(task => task.completed);
     const expiredTasks = tasks.filter(task => task.due_date < today && task.due_date !== "0001-01-01T00:00:00Z" && !task.completed);
     const allTasks = tasks;
@@ -44,7 +44,7 @@ const TaskList = ({ tasks, onDetail, currentView }) => {
                                 <Typography variant="h6">{task.title}</Typography>
                             </Box>
                             <Box>
-                                {task.due_date === "0001-01-01T00:00:00Z" ? (
+                                {task.due_date === "0001-01-01T00:00:00Z" || task.due_date === null ? (
                                     <Typography variant="body2" color="textSecondary">期限なし</Typography>
                                 ) : (
                                     <Typography variant="body2" color="textSecondary">{formatDate(task.due_date)}</Typography>
