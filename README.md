@@ -22,3 +22,19 @@ $ cd simple-task-manager
 $ docker compose up --build
 ```
 ブラウザ等で `http://127.0.0.1:3000` に接続
+
+## 技術構成
+### フロントエンド
+- React
+- MUI
+
+### バックエンド
+- Golang
+- Gin
+- gorm
+
+### データベース
+- SQLite
+
+### その他
+- Docker
